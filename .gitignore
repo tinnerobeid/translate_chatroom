@@ -1,0 +1,36 @@
+# Node / React Native
+translate/node_modules/
+translate/.expo/
+translate/ios/build/
+translate/ios/Pods/
+translate/android/.gradle/
+translate/android/app/build/
+translate/android/.cxx/
+translate/android/local.properties
+translate/.watchmanconfig
+translate/.vscode/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Metro / packager
+translate/.metro-cache/
+
+# FastAPI / Python
+backend/__pycache__/
+backend/.pytest_cache/
+backend/venv/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Python virtual envs at root (just in case)
+env/
+venv/
