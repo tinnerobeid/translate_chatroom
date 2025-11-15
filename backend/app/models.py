@@ -20,9 +20,8 @@ BLOCKS_FILE = os.path.join(DATA_DIR, "blocks.json")
 REPORTS_FILE = os.path.join(DATA_DIR, "reports.json")
 
 
-# =====================================================================
 # User Model
-# =====================================================================
+
 
 class User:
     """User model"""
@@ -62,9 +61,7 @@ class User:
         )
 
 
-# =====================================================================
 # JSON File Storage Utilities
-# =====================================================================
 
 def load_json_file(filename: str, default: dict = None) -> dict:
     """Load JSON file, return default if not exists"""
@@ -90,9 +87,7 @@ def save_json_file(filename: str, data: dict):
         logger.error(f"Error saving {filename}: {e}")
 
 
-# =====================================================================
 # Password Management
-# =====================================================================
 
 def hash_password(password: str) -> str:
     """Hash password using bcrypt with 12 rounds"""
@@ -109,9 +104,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return False
 
 
-# =====================================================================
 # User Repository (CRUD operations)
-# =====================================================================
 
 class UserRepository:
     """Manages user data in JSON file"""
@@ -170,9 +163,8 @@ class UserRepository:
         return username in users_data
 
 
-# =====================================================================
+
 # Block Management
-# =====================================================================
 
 class BlockRepository:
     """Manages blocked users"""
@@ -210,9 +202,8 @@ class BlockRepository:
         save_json_file(BLOCKS_FILE, blocks_data)
 
 
-# =====================================================================
+
 # Report Management
-# =====================================================================
 
 class ReportRepository:
     """Manages user reports"""

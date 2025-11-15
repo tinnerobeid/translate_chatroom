@@ -6,9 +6,7 @@ from typing import Optional
 from datetime import datetime
 
 
-# =====================================================================
 # Authentication Schemas
-# =====================================================================
 
 class UserRegisterRequest(BaseModel):
     """Schema for user registration request"""
@@ -90,9 +88,9 @@ class ErrorResponse(BaseModel):
         }
 
 
-# =====================================================================
+
 # Chat & Moderation Schemas
-# =====================================================================
+
 
 class BlockRequest(BaseModel):
     """Schema for block/unblock requests"""

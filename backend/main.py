@@ -8,7 +8,6 @@ import logging
 import json
 import random
 import os
-import hashlib
 import jwt
 import asyncio
 import bcrypt
@@ -16,27 +15,26 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 # Password hashing
+# SECRET_KEY will be initialized after logger is configured below
 SECRET_KEY = os.getenv("SECRET_KEY")
+
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24 * 60  # 30 days
+
+# Logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialize SECRET_KEY after logger exists so warnings can be logged
 if not SECRET_KEY:
     # Allow using default only in development mode
     if os.getenv("ENVIRONMENT", "development") == "production":
         raise ValueError("SECRET_KEY environment variable is required in production")
     SECRET_KEY = "dev-secret-key-change-for-production"
-    logger = logging.getLogger(__name__)
     logger.warning("⚠️  Using default SECRET_KEY. Set SECRET_KEY environment variable for production.")
 
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24 * 60  # 30 days
-
-# ------------------------------------------------------------------
-# Logging
-# ------------------------------------------------------------------
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# ------------------------------------------------------------------
 # Input validation & limits
-# ------------------------------------------------------------------
 MAX_MESSAGE_LENGTH = 5000  # Max characters per message
 MAX_USERNAME_LENGTH = 100
 MAX_LANGUAGES = 20  # Max global languages allowed
@@ -50,9 +48,8 @@ def validate_message(text: str) -> bool:
         return False
     return True
 
-# ------------------------------------------------------------------
 # App + CORS
-# ------------------------------------------------------------------
+
 app = FastAPI(title="Translation Chat Backend")
 app.add_middleware(
     CORSMiddleware,
@@ -62,9 +59,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ------------------------------------------------------------------
 # Static File Serving
-# ------------------------------------------------------------------
+
 # Get frontend path (works both locally and on Render)
 FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 
@@ -80,9 +76,8 @@ async def read_root():
         return FileResponse(index_path)
     return {"message": "Frontend not found", "path": FRONTEND_DIR}
 
-# ------------------------------------------------------------------
+
 # deep-translator compatibility helpers
-# ------------------------------------------------------------------
 _supported_langs_cache: Optional[dict[str, str]] = None  # {name_lower: code}
 
 def get_supported_languages_dict() -> dict[str, str]:
@@ -127,9 +122,9 @@ def normalize_lang(user_input: Optional[str]) -> Optional[str]:
         return name_to_code[text]
     return None
 
-# ------------------------------------------------------------------
+
 # Simple HTTP testing endpoints
-# ------------------------------------------------------------------
+
 @app.get("/languages")
 async def languages():
     try:
@@ -164,9 +159,9 @@ async def translate_http(
         logger.error(f"/translate error: {e}")
         return JSONResponse({"error": str(e)}, status_code=500)
 
-# ------------------------------------------------------------------
+
 # User Authentication & Data Storage
-# ------------------------------------------------------------------
+
 USERS_FILE = "users.json"
 BLOCKS_FILE = "blocks.json"
 REPORTS_FILE = "reports.json"
@@ -237,9 +232,9 @@ class ReportRequest(BaseModel):
     reason: str
     message_id: Optional[str] = None
 
-# ------------------------------------------------------------------
+
 # WebSocket translation chat (per-user target language)
-# ------------------------------------------------------------------
+
 class ConnectionManager:
     def __init__(self):
         self.active_connections: list[WebSocket] = []
@@ -487,9 +482,9 @@ manager = ConnectionManager()
 
 HELP = "Commands: '/name <your-name>' to set display name, '/add-lang <code-or-name>' to add a language (e.g., /add-lang fr, /add-lang spanish), '/remove-lang <code>' to remove a language."
 
-# ------------------------------------------------------------------
+
 # Authentication Endpoints
-# ------------------------------------------------------------------
+
 @app.post("/api/register")
 async def register(user_data: UserRegister):
     """Register a new user"""
